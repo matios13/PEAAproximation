@@ -1,6 +1,8 @@
 package knapsack;
 
 import java.util.Arrays;
+import java.util.function.IntUnaryOperator;
+
 import static knapsack.Main.*;
 
 public class Knapsack {
@@ -27,26 +29,26 @@ public int mainCalculate(int eDivider) {
 		for (int i = 0; i < N; i++) {
 			tempValue = items[i].value / eDivider;
 			aroxTableValue[i] = tempValue;
-			aproxValuesSum +=tempValue;
+			aproxValuesSum += tempValue;
 		}
 		int previousValuesTable[] = new int[aproxValuesSum + 1];
 		int currentValuesTable[] = new int[aproxValuesSum + 1];
 		previousValuesTable[0] = 0;
 		
-
-		for (int x = 1; x <= aproxValuesSum; x++)
-			previousValuesTable[x] = MAX_VALUE+1;
-
-		for (int i = 0; i < N; i++) { //sprawdzamy kazdy przedmiot
-			
+		IntUnaryOperator functionToUse = new IntUnaryOperator() {			
+			@Override
+			public int applyAsInt(int operand) {
+				return MAX_VALUE+1;
+			}
+		};
+		Arrays.parallelSetAll(previousValuesTable, functionToUse);
+		for (int i = 0; i < N; i++) { //sprawdzamy kazdy przedmiot		
 			for (int x = 0; x <= aproxValuesSum; x++) {
-				
 				currentValuesTable[x] = previousValuesTable[x];
 				int value = calculateValue(aroxTableValue[i], items[i].weight, x, previousValuesTable);
 				if (value < currentValuesTable[x])
 					currentValuesTable[x] = value;
 			}
-
 			previousValuesTable = currentValuesTable;
 			currentValuesTable = new int[aproxValuesSum + 1];
 		}
@@ -71,7 +73,7 @@ public int mainCalculate(int eDivider) {
 			eDivider = 1;
 		return eDivider;
 	}
-public int calculateDeviderForSorted(float epsilon){		
+	public int calculateDeviderForSorted(float epsilon){		
 		int valueMax=items[items.length-1].value;
 		int eDivider=0;
 			eDivider = (int) ((epsilon * valueMax) / N);
