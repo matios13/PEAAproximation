@@ -34,6 +34,7 @@ public class Test {
 			timesWithSort.add(time);
 			solutionsWithSort.add(solution);
 			System.out.println(epsilon+"########################################");
+			System.out.println(" time : " +timesWithSort.get(i));
 			System.out.println("value : "+calculatePercent(solutions.get(i),solutionsWithSort.get(i))+" time : " +calculatePercent(times.get(i),timesWithSort.get(i)));
 			System.out.println("value -0 : "+calculatePercent(solutionsWithSort.get(0),solutionsWithSort.get(i))+" time : " +calculatePercent(timesWithSort.get(0),timesWithSort.get(i)));
 			System.out.println("########################################");		

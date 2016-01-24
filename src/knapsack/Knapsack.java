@@ -7,22 +7,22 @@ import static knapsack.Main.*;
 
 public class Knapsack {
 
-	
 	int capacity;
 	Item[] items;
-	
-	public int calculateWithSort(float epsilon){
+
+	public int calculateWithSort(float epsilon) {
 		Arrays.parallelSort(items);
 		return mainCalculate(calculateDeviderForSorted(epsilon));
 	}
+
 	public int calculate(float epsilon) {
-		
+
 		return mainCalculate(calculateDevider(epsilon));
-		
+
 	}
-	
-public int mainCalculate(int eDivider) {
-		
+
+	private int mainCalculate(int eDivider) {
+
 		int aproxValuesSum = 0;
 		int aroxTableValue[] = new int[N];
 		int tempValue = 0;
@@ -34,65 +34,67 @@ public int mainCalculate(int eDivider) {
 		int previousValuesTable[] = new int[aproxValuesSum + 1];
 		int currentValuesTable[] = new int[aproxValuesSum + 1];
 		previousValuesTable[0] = 0;
-		
-		IntUnaryOperator functionToUse = new IntUnaryOperator() {			
+
+		IntUnaryOperator functionToUse = new IntUnaryOperator() {
 			@Override
 			public int applyAsInt(int operand) {
-				return MAX_VALUE+1;
+				return MAX_VALUE + 1;
 			}
 		};
 		Arrays.parallelSetAll(previousValuesTable, functionToUse);
-		for (int i = 0; i < N; i++) { //sprawdzamy kazdy przedmiot		
+		for (int i = 0; i < N; i++) { // sprawdzamy kazdy przedmiot
 			for (int x = 0; x <= aproxValuesSum; x++) {
 				currentValuesTable[x] = previousValuesTable[x];
-				int value = calculateValue(aroxTableValue[i], items[i].weight, x, previousValuesTable);
+				int value = calculateValue(aroxTableValue[i], items[i].weight,
+						x, previousValuesTable);
 				if (value < currentValuesTable[x])
 					currentValuesTable[x] = value;
 			}
 			previousValuesTable = currentValuesTable;
 			currentValuesTable = new int[aproxValuesSum + 1];
 		}
-		for(int i = 0;i<aproxValuesSum;i++){
-			if(previousValuesTable[i] > capacity)
-				return eDivider * (i - 1);				
+		for (int i = 0; i < aproxValuesSum; i++) {
+			if (previousValuesTable[i] > capacity)
+				return eDivider * (i - 1);
 		}
-		return aproxValuesSum;		
+		return aproxValuesSum;
 	}
 
-
-	
-	public int calculateDevider(float epsilon){		
-		int valueMax=-1;
+	private int calculateDevider(float epsilon) {
+		int valueMax = -1;
 		for (int i = 0; i < N; i++) {
-			if ( items[i].value> valueMax)
+			if (items[i].value > valueMax)
 				valueMax = items[i].value;
 		}
-		int eDivider=0;
-			eDivider = (int) ((epsilon * valueMax) / N);
+		int eDivider = 0;
+		eDivider = (int) ((epsilon * valueMax) / N);
 		if (eDivider == 0)
 			eDivider = 1;
 		return eDivider;
 	}
-	public int calculateDeviderForSorted(float epsilon){		
-		int valueMax=items[items.length-1].value;
-		int eDivider=0;
-			eDivider = (int) ((epsilon * valueMax) / N);
+
+	private int calculateDeviderForSorted(float epsilon) {
+		int valueMax = items[items.length - 1].value;
+		int eDivider = 0;
+		eDivider = (int) ((epsilon * valueMax) / N);
 		if (eDivider == 0)
 			eDivider = 1;
 		return eDivider;
 	}
-	public int calculateValue(int aValue, int weight, int iteration, int previousValuesTable[]){
+
+	private int calculateValue(int aValue, int weight, int iteration,
+			int previousValuesTable[]) {
 		int value;
 
 		if (aValue >= iteration)
 			value = weight;
-		
+
 		else {
 			int previousValue = previousValuesTable[iteration - aValue];
 			if (previousValue == MAX_VALUE + 1)
-				value = MAX_VALUE+1;		
+				value = MAX_VALUE + 1;
 			else
-				value = weight+previousValue;
+				value = weight + previousValue;
 		}
 		return value;
 	}
